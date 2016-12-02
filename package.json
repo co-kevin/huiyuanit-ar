@@ -1,7 +1,7 @@
 {
   "name": "huiyuanit-ar",
   "version": "1.0.0",
-  "description": "Automatic write and submit huiyuanit esap working report",
+  "description": "Automatic write and submit huiyuanit esap workday report",
   "main": "src/index.js",
   "bin": {
     "huiyuanit-ar": "bin/huiyuanit-ar"

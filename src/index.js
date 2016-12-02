@@ -7,44 +7,50 @@ import workday from '../workday';
 import yargs from 'yargs';
 import pkg from '../package';
 
+if (yargs.argv.v) {
+  console.log(pkg.version);
+  process.exit(0);
+}
+
 const argv = yargs
   .option('u', {
     alias: 'username',
     demand: true,
-    describe: 'esap.huiyuanit.com login username'
+    describe: 'The esap.huiyuanit.com login username'
   })
   .option('p', {
     alias: 'password',
     demand: true,
-    describe: 'esap.huiyuanit.com login password'
+    describe: 'The esap.huiyuanit.com login password'
   })
   .option('s', {
     alias: 'submit',
-    demand: true,
-    describe: 'Submit draft',
+    describe: 'Do submit draft',
     boolean: true
   })
   .option('i', {
     alias: 'project-id',
     demand: true,
     default: 144,
-    describe: 'project id',
+    describe: 'The project id',
     type: 'int'
   })
   .option('t', {
     alias: 'trip',
-    describe: 'is trip',
+    describe: 'The trip is true',
     boolean: true
   })
   .option('c', {
     alias: 'city',
-    describe: 'the trip city',
+    describe: 'The trip city, if trip is true',
     type: 'string'
   })
-  .alias('v', 'version')
+  .option('v', {
+    alias: 'version',
+    describe: 'Print the current version',
+    boolean: true
+  })
   .argv;
-
-console.log(argv);
 
 let draft = new Draft();
 let login = new Login();

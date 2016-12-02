@@ -3,10 +3,6 @@ import Draft from './draft';
 import Login from './login';
 import Submit from './submit';
 import DraftRecord from './draft_record';
-import {
-  user,
-  report
-} from '../config';
 import workday from '../workday';
 import yargs from 'yargs';
 import pkg from '../package';
@@ -21,12 +17,6 @@ const argv = yargs
     alias: 'password',
     demand: true,
     describe: 'esap.huiyuanit.com login password'
-  })
-  .option('o', {
-    alias: 'option',
-    demand: true,
-    describe: 'draft or submit',
-    type: 'string'
   })
   .option('pi', {
     alias: 'project-id',
@@ -52,6 +42,12 @@ const argv = yargs
     describe: 'the trip city',
     type: 'string'
   })
+  .option('s', {
+    alias: 'submit',
+    demand: true,
+    describe: 'Submit draft',
+    boolean: true
+  })
   .alias('v', 'version')
   .argv;
 
@@ -60,26 +56,27 @@ let login = new Login();
 let draft_record = new DraftRecord();
 let submit = new Submit();
 
-if ('draft' === argv.o) {
-  login.login(argv.u, argv.p).then(
-    (cookie) => write_draft(cookie),
-    (err) => error(err)
-  );
-} else if ('submit' === argv.o) {
+if (argv.s) {
   login.login(argv.u, argv.p).then(
     (cookie) => submit_all_draft(cookie),
     (err) => error(err)
   );
 } else {
-  console.log(`We don't have this option: ${argv.o}. Expect draft or submit`.red);
-  process.exit(1);
+  login.login(argv.u, argv.p).then(
+    (cookie) => write_draft(cookie),
+    (err) => error(err)
+  );
 }
 
 function write_draft(cookie) {
-  const days = report_dates();
+  let now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const days = report_dates(year, month);
+
   if (days) {
     days.map((day) => {
-      const report_date = `${report.year}-${report.month}-${day}`;
+      const report_date = `${year}-${month}-${day}`;
       draft.write_report(report_date, cookie).then(
         (data) => console.log(`DRAFT: ${report_date} ${data}`.green),
         (err) => console.log(`DRAFT: ${report_date} ${err}`.red)
@@ -102,9 +99,9 @@ function submit_all_draft(cookie) {
   }, (err) => error(err));
 }
 
-function report_dates() {
-  let year = workday[report.year];
-  let days = year[report.month];
+function report_dates($year, $month) {
+  let year = workday[$year];
+  let days = year[$month];
 
   if (year && days) {
     // get before now days
@@ -122,14 +119,6 @@ function report_dates() {
   } else {
     console.log(`Missing workday data month ${report.year}-${report.month}`.red);
   }
-}
-
-function is_report_time_after_now() {
-  let now = new Date();
-  if (Number(report.year) > now.getFullYear()) {
-    return true;
-  }
-  return Number(report.month) > (now.getMonth() + 1)
 }
 
 function error(err) {

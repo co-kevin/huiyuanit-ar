@@ -8,31 +8,70 @@ import {
   report
 } from '../config';
 import workday from '../workday';
+import yargs from 'yargs';
+import pkg from '../package';
 
-if (process.argv.length != 3) {
-  console.log('Usage: index.js <option> \n option: draft or submit');
-  process.exit(1);
-}
-
-const option = process.argv[2];
+const argv = yargs
+  .option('u', {
+    alias: 'username',
+    demand: true,
+    describe: 'esap.huiyuanit.com login username'
+  })
+  .option('p', {
+    alias: 'password',
+    demand: true,
+    describe: 'esap.huiyuanit.com login password'
+  })
+  .option('o', {
+    alias: 'option',
+    demand: true,
+    describe: 'draft or submit',
+    type: 'string'
+  })
+  .option('pi', {
+    alias: 'project-id',
+    demand: true,
+    default: 144,
+    describe: 'project id',
+    type: 'int'
+  })
+  .option('pi', {
+    alias: 'project-id',
+    demand: true,
+    default: 144,
+    describe: 'project id',
+    type: 'int'
+  })
+  .option('t', {
+    alias: 'trip',
+    describe: 'is trip',
+    boolean: true
+  })
+  .option('c', {
+    alias: 'city',
+    describe: 'the trip city',
+    type: 'string'
+  })
+  .alias('v', 'version')
+  .argv;
 
 let draft = new Draft();
 let login = new Login();
 let draft_record = new DraftRecord();
 let submit = new Submit();
 
-if ('draft' === option) {
-  login.login(user.username, user.password).then(
+if ('draft' === argv.o) {
+  login.login(argv.u, argv.p).then(
     (cookie) => write_draft(cookie),
     (err) => error(err)
   );
-} else if ('submit' === option) {
-  login.login(user.username, user.password).then(
+} else if ('submit' === argv.o) {
+  login.login(argv.u, argv.p).then(
     (cookie) => submit_all_draft(cookie),
     (err) => error(err)
   );
 } else {
-  console.log(`We don't have this option: ${option}. Expect draft or submit`.red);
+  console.log(`We don't have this option: ${argv.o}. Expect draft or submit`.red);
   process.exit(1);
 }
 

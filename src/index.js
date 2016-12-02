@@ -18,14 +18,13 @@ const argv = yargs
     demand: true,
     describe: 'esap.huiyuanit.com login password'
   })
-  .option('pi', {
-    alias: 'project-id',
+  .option('s', {
+    alias: 'submit',
     demand: true,
-    default: 144,
-    describe: 'project id',
-    type: 'int'
+    describe: 'Submit draft',
+    boolean: true
   })
-  .option('pi', {
+  .option('i', {
     alias: 'project-id',
     demand: true,
     default: 144,
@@ -42,14 +41,10 @@ const argv = yargs
     describe: 'the trip city',
     type: 'string'
   })
-  .option('s', {
-    alias: 'submit',
-    demand: true,
-    describe: 'Submit draft',
-    boolean: true
-  })
   .alias('v', 'version')
   .argv;
+
+console.log(argv);
 
 let draft = new Draft();
 let login = new Login();
@@ -57,11 +52,13 @@ let draft_record = new DraftRecord();
 let submit = new Submit();
 
 if (argv.s) {
+  // submit
   login.login(argv.u, argv.p).then(
     (cookie) => submit_all_draft(cookie),
     (err) => error(err)
   );
 } else {
+  // draft
   login.login(argv.u, argv.p).then(
     (cookie) => write_draft(cookie),
     (err) => error(err)
@@ -77,11 +74,13 @@ function write_draft(cookie) {
   if (days) {
     days.map((day) => {
       const report_date = `${year}-${month}-${day}`;
-      draft.write_report(report_date, cookie).then(
+      draft.write_report(report_date, cookie, argv).then(
         (data) => console.log(`DRAFT: ${report_date} ${data}`.green),
         (err) => console.log(`DRAFT: ${report_date} ${err}`.red)
       );
     });
+  } else {
+    console.log(`Missing workday data month ${year}-${month}`.red);
   }
 }
 
@@ -117,7 +116,7 @@ function report_dates($year, $month) {
     }
     return before_days;
   } else {
-    console.log(`Missing workday data month ${report.year}-${report.month}`.red);
+    return null;
   }
 }
 

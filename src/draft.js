@@ -21,12 +21,22 @@ export default class Draft {
     };
   }
 
-  write_report(add_time, cookie) {
+  write_report(add_time, cookie, $param) {
     return new Promise((resolve, reject) => {
       this.get_user_id_and_encoding(cookie).then((param) => {
         this.data['add_time'] = add_time;
         this.data['user_id'] = param.user_id;
         this.data['encoding'] = param.encoding;
+
+        if ($param.i) {
+          this.data['proj_id'] = $param.i;
+        }
+        if ($param.trip) {
+          this.data['trip'] = 1;
+        }
+        if ($param.city) {
+          this.data['city'] = $param.city;
+        }
 
         let data = querystring.stringify(this.data);
         let opt = {

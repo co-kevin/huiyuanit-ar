@@ -10,7 +10,8 @@ export default class Login {
       port: _const.port,
       path: _const.path_login,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': _const.user_agent
       }
     }
   }
@@ -31,6 +32,8 @@ export default class Login {
       };
       data = querystring.stringify(data);
       let req = http.request(this.opt, (serverFeedback) => {
+        // console.log(serverFeedback.statusCode);
+        // console.log(serverFeedback.headers);
         if (200 === serverFeedback.statusCode) {
           // username or password wrong
           reject('The username or password error! Please check and try again');

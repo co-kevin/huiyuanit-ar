@@ -36,3 +36,9 @@ $ huiyuanit-ar -u <your username> -p <your password> -s
 SUBMIT: 382 提交成功！
 SUBMIT: 383 提交成功！
 ```
+
+## Upgrade
+
+```
+$ npm install -g huiyuanit-ar
+```
